@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
 import Customers from './pages/Customers';
+import Products from './pages/Products'; 
+
 
 function Layout() {
   return (
@@ -30,7 +32,7 @@ function App() {
         <Route path="/" element={<Layout />} />
         <Route path="/orders" element={<h2>Orders Page</h2>} />
         <Route path="/sales" element={<h2>Sales Page</h2>} />
-        <Route path="/product" element={<h2>Products Page</h2>} />
+        <Route path="/product" element={<Products />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/reports" element={<h2>Reports Page</h2>} />
         <Route path="/shipment" element={<h2>Shipment Page</h2>} />

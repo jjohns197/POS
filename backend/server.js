@@ -179,6 +179,82 @@ app.delete('/Customers/:id', (req, res) => {
   });
 });
 
+// CRUD for Products
+
+// Create a new product
+app.post('/Product', (req, res) => {
+  const { product_name, price, product_quantity, product_descr } = req.body;
+  const query = 'INSERT INTO Product (product_name, price, product_quantity, product_descr) VALUES (?, ?, ?, ?)';
+  db.query(query, [product_name, price, product_quantity, product_descr], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to create product' });
+    }
+    res.status(201).json({ message: 'Product created successfully', productId: result.insertId });
+  });
+});
+
+// Read all products
+app.get('/Product', (req, res) => {
+  const query = 'SELECT * FROM Product';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to fetch products' });
+    }
+    res.status(200).json(results);
+  });
+});
+
+// Read a single product by ID
+app.get('/Product/:id', (req, res) => {
+  const { id } = req.params;
+  const query = 'SELECT * FROM Product WHERE product_id = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to fetch product' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).json(result[0]);
+  });
+});
+
+// Update a product
+app.put('/Product/:id', (req, res) => {
+  const { id } = req.params;
+  const { product_name, price, product_quantity, product_descr } = req.body;
+  const query = 'UPDATE product SET product_name = ?, price = ?, product_quantity = ?, product_descr = ? WHERE product_id = ?';
+  db.query(query, [product_name, price, product_quantity, product_descr, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to update product' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product updated successfully' });
+  });
+});
+
+// Delete a product
+app.delete('/Product/:id', (req, res) => {
+  const { id } = req.params;
+  const query = 'DELETE FROM Product WHERE product_id = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to delete product' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.status(200).json({ message: 'Product deleted successfully' });
+  });
+});
+
 
 app.listen(5001, () => {
   console.log('Server running on port 5001');
