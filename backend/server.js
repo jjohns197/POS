@@ -26,52 +26,68 @@ db.connect(err => {
 
 // Create a new order
 app.post('/orders', (req, res) => {
-  const { order_date, customer_id, total_amount } = req.body;
+  const { order_date, customer_id, total_amount, products } = req.body; // `products` is an array of product IDs
 
-  const sql = 'INSERT INTO `orders` (order_date, customer_id, total_amount) VALUES (?, ?, ?)';
-  db.query(sql, [order_date, customer_id, total_amount], (err, result) => {
+  // Log the request data for debugging
+  console.log('Order data received:', { order_date, customer_id, total_amount, products });
+
+  if (!order_date || !customer_id || !total_amount || !Array.isArray(products)) {
+    return res.status(400).send('Invalid request data');
+  }
+
+  // Insert the order into the `orders` table
+  const sqlOrder = 'INSERT INTO `orders` (order_date, customer_id, total_amount) VALUES (?, ?, ?)';
+  db.query(sqlOrder, [order_date, customer_id, total_amount], (err, result) => {
     if (err) {
-      console.error(err);
+      console.error('Error inserting order:', err);
       return res.status(500).send('Error creating order');
     }
-    res.status(201).send({ message: 'Order created', orderId: result.insertId });
+
+    const orderId = result.insertId; // Get the newly created order's ID
+
+    // Insert products into the `order_products` table
+    const sqlOrderProduct = 'INSERT INTO `order_products` (order_id, product_id) VALUES (?, ?)';
+    products.forEach((productId) => {
+      db.query(sqlOrderProduct, [orderId, productId], (err) => {
+        if (err) console.error(`Error inserting product (${productId}):`, err);
+      });
+    });
+
+    res.status(201).send('Order created successfully');
   });
 });
 
 // Get all orders
 app.get('/orders', (req, res) => {
-  const sql = 'SELECT * FROM `orders`';
+  const sql = `
+      SELECT 
+          orders.order_id, 
+          orders.order_date, 
+          customer.customer_fName, 
+          customer.customer_lName, 
+          product.product_id, 
+          product.product_name, 
+          orders.total_amount
+      FROM orders
+      LEFT JOIN customer ON orders.customer_id = customer.customer_id
+      LEFT JOIN order_products ON orders.order_id = order_products.order_id
+      LEFT JOIN product ON order_products.product_id = product.product_id;
+  `;
   db.query(sql, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Error fetching orders');
-    }
-    res.status(200).json(result);
-  });
-});
-
-// Get a specific order by ID
-app.get('/orders/:id', (req, res) => {
-  const { id } = req.params;
-  const sql = 'SELECT * FROM `orders` WHERE order_id = ?';
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Error fetching order');
-    }
-    if (result.length === 0) {
-      return res.status(404).send('Order not found');
-    }
-    res.status(200).json(result[0]);
+      if (err) {
+          console.error('Error fetching orders:', err);
+          return res.status(500).send('Error fetching orders');
+      }
+      res.status(200).json(result);
   });
 });
 
 app.put('/orders/:id', (req, res) => {
   const { id } = req.params;
-  const { order_date, customer_id, total_amount } = req.body;
+  const { order_date, customer_id, total_amount, product_id, customer_fName, customer_lName, product_name } = req.body;
 
-  const sql = 'UPDATE `orders` SET order_date = ?, customer_id = ?, total_amount = ? WHERE order_id = ?';
-  db.query(sql, [order_date, customer_id, total_amount, id], (err, result) => {
+  const sql = 'UPDATE `orders` SET order_date = ?, customer_id = ?, total_amount = ?, product_id = ?, customer_fName = ?, customer_lName = ?, product_name = ? WHERE order_id = ?';
+  db.query(sql, [order_date, customer_id, total_amount, product_id, customer_fName, customer_lName, product_name, id], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).send('Error updating order');
@@ -85,17 +101,25 @@ app.put('/orders/:id', (req, res) => {
 
 // Delete an order
 app.delete('/orders/:id', (req, res) => {
-  const { id } = req.params;
-  const sql = 'DELETE FROM `orders` WHERE order_id = ?';
-  db.query(sql, [id], (err, result) => {
+  const orderId = req.params.id;
+
+  // First, delete all rows in `order_products` that reference the order
+  const deleteOrderProductsQuery = 'DELETE FROM `order_products` WHERE `order_id` = ?';
+  db.query(deleteOrderProductsQuery, [orderId], (err) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send('Error deleting order');
+      console.error('Error deleting related order products:', err);
+      return res.status(500).send('Error deleting related products');
     }
-    if (result.affectedRows === 0) {
-      return res.status(404).send('Order not found');
-    }
-    res.status(200).send('Order deleted');
+
+    // Then, delete the order itself
+    const deleteOrderQuery = 'DELETE FROM `orders` WHERE `order_id` = ?';
+    db.query(deleteOrderQuery, [orderId], (err) => {
+      if (err) {
+        console.error('Error deleting order:', err);
+        return res.status(500).send('Error deleting order');
+      }
+      res.status(200).send('Order deleted successfully');
+    });
   });
 });
 

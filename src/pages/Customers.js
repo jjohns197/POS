@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 function Customers() {
   const [customers, setCustomers] = useState([]);
   const [newCustomer, setNewCustomer] = useState({
@@ -93,6 +92,8 @@ function Customers() {
           </tbody>
         </table>
       </div>
+
+
 
       {/* Action Buttons */}
       <div className="button-container">

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
 import Customers from './pages/Customers';
 import Products from './pages/Products'; 
+import Orders from './pages/Orders'; 
 
 
 function Layout() {
@@ -30,7 +31,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Layout />} />
-        <Route path="/orders" element={<h2>Orders Page</h2>} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/sales" element={<h2>Sales Page</h2>} />
         <Route path="/product" element={<Products />} />
         <Route path="/customers" element={<Customers />} />
