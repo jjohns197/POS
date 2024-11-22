@@ -26,59 +26,78 @@ db.connect(err => {
 
 // Create a new order
 app.post('/orders', (req, res) => {
-  const { order_date, customer_id, total_amount, products } = req.body; // `products` is an array of product IDs
+  const { customer_id, products } = req.body;
 
-  // Log the request data for debugging
-  console.log('Order data received:', { order_date, customer_id, total_amount, products });
+  console.log('Received customer_id:', customer_id);
+    console.log('Received products:', products); // Log this to debug
 
-  if (!order_date || !customer_id || !total_amount || !Array.isArray(products)) {
-    return res.status(400).send('Invalid request data');
+  if (!customer_id || !products || products.length === 0) {
+      return res.status(400).json({ error: "Missing required data" });
   }
 
-  // Insert the order into the `orders` table
-  const sqlOrder = 'INSERT INTO `orders` (order_date, customer_id, total_amount) VALUES (?, ?, ?)';
-  db.query(sqlOrder, [order_date, customer_id, total_amount], (err, result) => {
-    if (err) {
-      console.error('Error inserting order:', err);
-      return res.status(500).send('Error creating order');
-    }
+  const invalidProduct = products.find(
+    (product) => !product.product_id || typeof product.quantity !== 'number'
+);
 
-    const orderId = result.insertId; // Get the newly created order's ID
+if (invalidProduct) {
+    return res.status(400).json({ error: "Invalid product data in the request" });
+}
 
-    // Insert products into the `order_products` table
-    const sqlOrderProduct = 'INSERT INTO `order_products` (order_id, product_id) VALUES (?, ?)';
-    products.forEach((productId) => {
-      db.query(sqlOrderProduct, [orderId, productId], (err) => {
-        if (err) console.error(`Error inserting product (${productId}):`, err);
+  // Insert new order
+  const insertOrderQuery = `
+      INSERT INTO orders (order_date, customer_id)
+      VALUES (NOW(), ?)
+  `;
+
+  db.query(insertOrderQuery, [customer_id], (err, orderResult) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Failed to create order" });
+      }
+
+      const orderId = orderResult.insertId;
+
+      // Insert products for the order
+      const insertProductsQuery = `
+          INSERT INTO order_products (order_id, product_id, quantity)
+          VALUES ?
+      `;
+
+      const productValues = products.map(product => [orderId, product.product_id, product.quantity]);
+
+      db.query(insertProductsQuery, [productValues], (err) => {
+          if (err) {
+              console.error(err);
+              return res.status(500).json({ error: "Failed to add products to order" });
+          }
+
+          res.status(201).json({ message: "Order created successfully", orderId });
       });
-    });
-
-    res.status(201).send('Order created successfully');
   });
 });
-
 // Get all orders
 app.get('/orders', (req, res) => {
-  const sql = `
+  const query = `
       SELECT 
-          orders.order_id, 
-          orders.order_date, 
-          customer.customer_fName, 
-          customer.customer_lName, 
-          product.product_id, 
-          product.product_name, 
-          orders.total_amount
-      FROM orders
-      LEFT JOIN customer ON orders.customer_id = customer.customer_id
-      LEFT JOIN order_products ON orders.order_id = order_products.order_id
-      LEFT JOIN product ON order_products.product_id = product.product_id;
+          o.order_id, 
+          o.order_date, 
+          c.customer_fName, 
+          c.customer_lName, 
+          op.product_id, 
+          p.product_name, 
+          (p.price * IFNULL(op.quantity, 1)) AS total_amount
+      FROM orders o
+      LEFT JOIN customer c ON o.customer_id = c.customer_id
+      LEFT JOIN order_products op ON o.order_id = op.order_id
+      LEFT JOIN Product p ON op.product_id = p.product_id
   `;
-  db.query(sql, (err, result) => {
+  db.query(query, (err, results) => {
       if (err) {
-          console.error('Error fetching orders:', err);
-          return res.status(500).send('Error fetching orders');
+          console.error(err);
+          res.status(500).json({ error: "Failed to fetch orders" });
+      } else {
+          res.status(200).json(results);
       }
-      res.status(200).json(result);
   });
 });
 
@@ -141,15 +160,15 @@ app.post('/Customers', (req, res) => {
   });
 })
 
-//Read(get): Get all customers:
 app.get('/Customers', (req, res) => {
   const query = 'SELECT * FROM customer';
   db.query(query, (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Failed to fetch customers' });
-    }
-    res.status(200).json(results);
+      if (err) {
+          console.error(err);
+          res.status(500).json({ error: "Failed to fetch customers" });
+      } else {
+          res.status(200).json(results);
+      }
   });
 });
 
@@ -222,11 +241,12 @@ app.post('/Product', (req, res) => {
 app.get('/Product', (req, res) => {
   const query = 'SELECT * FROM Product';
   db.query(query, (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Failed to fetch products' });
-    }
-    res.status(200).json(results);
+      if (err) {
+          console.error(err);
+          res.status(500).json({ error: "Failed to fetch products" });
+      } else {
+          res.status(200).json(results);
+      }
   });
 });
 
