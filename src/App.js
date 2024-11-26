@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
 import Customers from './pages/Customers';
-import Products from './pages/Products'; 
-import Orders from './pages/Orders'; 
-
+import Products from './pages/Products';
+import Orders from './pages/Orders';
+import Sales from './pages/Sales';
+import Department from './pages/Department';
+import Employees from './pages/Employees';
 
 function Layout() {
   return (
@@ -21,7 +23,7 @@ function Layout() {
       <Link to="/employees"><div className="box bottom">Employees</div></Link>
       <Link to="/receipts"><div className="box bottom">Receipts</div></Link>
       <Link to="/help-support"><div className="box bottom">Help/Support</div></Link>
-      <Link to="/refunds-returns"><div className="box bottom">Refunds/Returns</div></Link>
+      <Link to="/departments"><div className="box bottom">Departments</div></Link>
     </div>
   );
 }
@@ -32,15 +34,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />} />
         <Route path="/orders" element={<Orders />} />
-        <Route path="/sales" element={<h2>Sales Page</h2>} />
+        <Route path="/sales" element={<Sales />} />
         <Route path="/product" element={<Products />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/reports" element={<h2>Reports Page</h2>} />
         <Route path="/shipment" element={<h2>Shipment Page</h2>} />
-        <Route path="/employees" element={<h2>Employees Page</h2>} />
+        <Route path="/employees" element={<Employees />} />
         <Route path="/receipts" element={<h2>Receipts Page</h2>} />
         <Route path="/help-support" element={<h2>Help/Support Page</h2>} />
-        <Route path="/refunds-returns" element={<h2>Refunds/Returns Page</h2>} />
+        <Route path="/departments" element={<Department />} />
       </Routes>
     </Router>
   );

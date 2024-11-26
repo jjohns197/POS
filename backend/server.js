@@ -29,19 +29,19 @@ app.post('/orders', (req, res) => {
   const { customer_id, products } = req.body;
 
   console.log('Received customer_id:', customer_id);
-    console.log('Received products:', products); // Log this to debug
+  console.log('Received products:', products); // Log this to debug
 
   if (!customer_id || !products || products.length === 0) {
-      return res.status(400).json({ error: "Missing required data" });
+    return res.status(400).json({ error: "Missing required data" });
   }
 
   const invalidProduct = products.find(
     (product) => !product.product_id || typeof product.quantity !== 'number'
-);
+  );
 
-if (invalidProduct) {
+  if (invalidProduct) {
     return res.status(400).json({ error: "Invalid product data in the request" });
-}
+  }
 
   // Insert new order
   const insertOrderQuery = `
@@ -50,29 +50,29 @@ if (invalidProduct) {
   `;
 
   db.query(insertOrderQuery, [customer_id], (err, orderResult) => {
-      if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Failed to create order" });
-      }
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Failed to create order" });
+    }
 
-      const orderId = orderResult.insertId;
+    const orderId = orderResult.insertId;
 
-      // Insert products for the order
-      const insertProductsQuery = `
+    // Insert products for the order
+    const insertProductsQuery = `
           INSERT INTO order_products (order_id, product_id, quantity)
           VALUES ?
       `;
 
-      const productValues = products.map(product => [orderId, product.product_id, product.quantity]);
+    const productValues = products.map(product => [orderId, product.product_id, product.quantity]);
 
-      db.query(insertProductsQuery, [productValues], (err) => {
-          if (err) {
-              console.error(err);
-              return res.status(500).json({ error: "Failed to add products to order" });
-          }
+    db.query(insertProductsQuery, [productValues], (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Failed to add products to order" });
+      }
 
-          res.status(201).json({ message: "Order created successfully", orderId });
-      });
+      res.status(201).json({ message: "Order created successfully", orderId });
+    });
   });
 });
 // Get all orders
@@ -92,12 +92,12 @@ app.get('/orders', (req, res) => {
       LEFT JOIN Product p ON op.product_id = p.product_id
   `;
   db.query(query, (err, results) => {
-      if (err) {
-          console.error(err);
-          res.status(500).json({ error: "Failed to fetch orders" });
-      } else {
-          res.status(200).json(results);
-      }
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch orders" });
+    } else {
+      res.status(200).json(results);
+    }
   });
 });
 
@@ -163,12 +163,12 @@ app.post('/Customers', (req, res) => {
 app.get('/Customers', (req, res) => {
   const query = 'SELECT * FROM customer';
   db.query(query, (err, results) => {
-      if (err) {
-          console.error(err);
-          res.status(500).json({ error: "Failed to fetch customers" });
-      } else {
-          res.status(200).json(results);
-      }
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch customers" });
+    } else {
+      res.status(200).json(results);
+    }
   });
 });
 
@@ -241,12 +241,12 @@ app.post('/Product', (req, res) => {
 app.get('/Product', (req, res) => {
   const query = 'SELECT * FROM Product';
   db.query(query, (err, results) => {
-      if (err) {
-          console.error(err);
-          res.status(500).json({ error: "Failed to fetch products" });
-      } else {
-          res.status(200).json(results);
-      }
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch products" });
+    } else {
+      res.status(200).json(results);
+    }
   });
 });
 
@@ -299,6 +299,126 @@ app.delete('/Product/:id', (req, res) => {
   });
 });
 
+//Employees//
+
+app.get('/employees', (req, res) => {
+  const sql = 'SELECT * FROM Employee';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching employees:', err);
+      res.status(500).send('Error fetching employees');
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.put('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  const { employee_fName, employee_lName, employee_dob, dept_id } = req.body;
+  const sql = `
+    UPDATE Employee
+    SET employee_fName = ?, employee_lName = ?, employee_dob = ?, dept_id = ?
+    WHERE employee_id = ?
+  `;
+  db.query(sql, [employee_fName, employee_lName, employee_dob, dept_id, id], (err, result) => {
+    if (err) {
+      console.error('Error updating employee:', err);
+      res.status(500).send('Error updating employee');
+    } else {
+      res.send({ message: 'Employee updated successfully' });
+    }
+  });
+});
+
+app.post('/employees', (req, res) => {
+  const { employee_fName, employee_lName, employee_dob, dept_id } = req.body;
+  const sql = `
+    INSERT INTO Employee (employee_fName, employee_lName, employee_dob, dept_id)
+    VALUES (?, ?, ?, ?)
+  `;
+  db.query(sql, [employee_fName, employee_lName, employee_dob, dept_id], (err, result) => {
+    if (err) {
+      console.error('Error adding employee:', err);
+      res.status(500).send('Error adding employee');
+    } else {
+      res.status(200).send({ message: 'Employee added successfully', employeeId: result.insertId });
+    }
+  });
+});
+
+app.delete('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'DELETE FROM Employee WHERE employee_id = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting employee:', err);
+      res.status(500).send('Error deleting employee');
+    } else {
+      res.send({ message: 'Employee deleted successfully' });
+    }
+  });
+});
+
+//Department//
+
+app.get('/departments', (req, res) => {
+  const sql = 'SELECT * FROM Department';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching departments:', err);
+      res.status(500).send('Error fetching departments');
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.delete('/departments/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'DELETE FROM Department WHERE dept_id = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting department:', err);
+      res.status(500).send('Error deleting department');
+    } else {
+      res.send({ message: 'Department deleted successfully' });
+    }
+  });
+});
+
+app.post('/departments', (req, res) => {
+  const { dept_name, dept_phone } = req.body;
+  if (!dept_name || !dept_phone) {
+    return res.status(400).send('Missing required fields');
+  }
+  const sql = 'INSERT INTO Department (dept_name, dept_phone) VALUES (?, ?)';
+  db.query(sql, [dept_name, dept_phone], (err, result) => {
+    if (err) {
+      console.error('Error adding department:', err);
+      res.status(500).send('Error adding department');
+    } else {
+      res.status(200).send({ message: 'Department added successfully', deptId: result.insertId });
+    }
+  });
+});
+
+app.put('/departments/:id', (req, res) => {
+  const { id } = req.params;
+  const { dept_name, dept_phone } = req.body;
+  if (!dept_name || !dept_phone) {
+    return res.status(400).send('Missing required fields');
+  }
+  const sql = 'UPDATE Department SET dept_name = ?, dept_phone = ? WHERE dept_id = ?';
+  db.query(sql, [dept_name, dept_phone, id], (err, result) => {
+    if (err) {
+      console.error('Error updating department:', err);
+      res.status(500).send('Error updating department');
+    } else {
+      res.send({ message: 'Department updated successfully' });
+    }
+  });
+});
 
 app.listen(5001, () => {
   console.log('Server running on port 5001');

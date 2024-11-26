@@ -1,0 +1,26 @@
+.sales-page {
+    text-align: center;
+    padding: 20px;
+}
+
+.title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.order-preview,
+.add-items,
+.order-total {
+    margin-bottom: 30px;
+}
+
+.actions button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.actions button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
