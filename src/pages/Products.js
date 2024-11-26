@@ -61,7 +61,7 @@ function Products() {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center' }}>Products</h2>
+      <h1 style={{ textAlign: 'center' }}>Products</h1>
 
       {/* Live Preview Section */}
       <div className="product-preview">

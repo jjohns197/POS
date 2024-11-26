@@ -420,6 +420,79 @@ app.put('/departments/:id', (req, res) => {
   });
 });
 
+//Receipts//
+
+app.get('/Receipts', (req, res) => {
+  const query = `
+    SELECT 
+      r.receipt_id,
+      r.employee_id,
+      e.employee_fName,
+      e.employee_lName,
+      r.customer_id,
+      c.customer_fName,
+      c.customer_lName,
+      r.receipt_date,
+      r.total_amt
+    FROM receipts r
+    JOIN Employee e ON r.employee_id = e.employee_id
+    JOIN Customer c ON r.customer_id = c.customer_id
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch receipts" });
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+// Submit order and create receipt
+app.post('/submit-order', (req, res) => {
+  const { total_amount, employee_id, customer_id, selectedProducts } = req.body;
+
+  if (!total_amount || !employee_id || !customer_id) {
+    return res.status(400).json({ error: "Missing required data" });
+  }
+
+  const receiptDate = new Date().toISOString().split('T')[0];
+
+  const receiptQuery = `
+    INSERT INTO receipts (employee_id, customer_id, receipt_date, total_amt)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(receiptQuery, [employee_id, customer_id, receiptDate, total_amount], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Failed to create receipt" });
+    }
+
+    const receiptId = result.insertId;
+
+    if (selectedProducts && selectedProducts.length > 0) {
+      const orderValues = selectedProducts.map(product => [receiptId, product.product_id, product.price]);
+
+      const orderQuery = `
+        INSERT INTO order_products (receipt_id, product_id, product_price)
+        VALUES ?
+      `;
+
+      db.query(orderQuery, [orderValues], (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Failed to add products to order" });
+        }
+
+        res.status(201).json({ message: "Order submitted successfully", receiptId });
+      });
+    } else {
+      res.status(201).json({ message: "Order submitted successfully", receiptId });
+    }
+  });
+});
+
 app.listen(5001, () => {
   console.log('Server running on port 5001');
 });

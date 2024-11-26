@@ -38,7 +38,7 @@ function Customers() {
     if (!selectedCustomer) return;
     axios.put(`http://localhost:5001/Customers/${selectedCustomer.customer_id}`, editCustomer)
       .then(response => {
-        const updatedCustomers = customers.map(customer => 
+        const updatedCustomers = customers.map(customer =>
           customer.customer_id === selectedCustomer.customer_id ? response.data : customer
         );
         setCustomers(updatedCustomers);
@@ -61,7 +61,7 @@ function Customers() {
 
   return (
     <div className="customers-container">
-      <h2 style={{ textAlign: 'center' }}>Customers</h2>
+      <h1 style={{ textAlign: 'center' }}>Customers</h1>
 
       {/* Live Preview Section */}
       <div className="customer-preview">
@@ -77,8 +77,8 @@ function Customers() {
           </thead>
           <tbody>
             {customers.map(customer => (
-              <tr 
-                key={customer.customer_id} 
+              <tr
+                key={customer.customer_id}
                 onClick={() => setSelectedCustomer(customer)}
                 style={{ backgroundColor: selectedCustomer?.customer_id === customer.customer_id ? '#e0e0e0' : 'transparent' }}
               >
