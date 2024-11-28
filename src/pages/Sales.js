@@ -52,12 +52,16 @@ const Sales = () => {
             return;
         }
 
+        console.log("Selected Order:", selectedOrder); // Debugging
+        console.log("Order ID:", selectedOrder.order_id); // Debugging
+
         calculateTotalAmount();
 
         const data = {
             total_amount: totalAmount,
             employee_id: selectedEmployee.employee_id,
             customer_id: selectedCustomer.customer_id,
+            order_id: selectedOrder.order_id, // Ensure this is defined
             selectedProducts: selectedProducts.map(product => ({
                 product_id: product.product_id,
                 price: product.price,
@@ -89,7 +93,7 @@ const Sales = () => {
                         <th>Customer Last Name</th>
                         <th>Product ID</th>
                         <th>Product Name</th>
-                        <th>Total Amount</th>
+                        <th>Price</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,7 +109,7 @@ const Sales = () => {
                             <td>{order.customer_lName}</td>
                             <td>{order.product_id || "N/A"}</td>
                             <td>{order.product_name || "N/A"}</td>
-                            <td>{order.total_amount}</td>
+                            <td>${order.total_amount}</td>
                         </tr>
 
                     ))}

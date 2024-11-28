@@ -78,18 +78,18 @@ app.post('/orders', (req, res) => {
 // Get all orders
 app.get('/orders', (req, res) => {
   const query = `
-      SELECT 
-          o.order_id, 
-          o.order_date, 
-          c.customer_fName, 
-          c.customer_lName, 
-          op.product_id, 
-          p.product_name, 
-          (p.price * IFNULL(op.quantity, 1)) AS total_amount
-      FROM orders o
-      LEFT JOIN customer c ON o.customer_id = c.customer_id
-      LEFT JOIN order_products op ON o.order_id = op.order_id
-      LEFT JOIN Product p ON op.product_id = p.product_id
+  SELECT 
+  o.order_id, 
+  o.order_date, 
+  c.customer_fName, 
+  c.customer_lName, 
+  op.product_id, 
+  p.product_name, 
+  p.price * IFNULL(op.quantity, 1) AS total_amount
+FROM orders o
+JOIN customer c ON o.customer_id = c.customer_id
+LEFT JOIN order_products op ON o.order_id = op.order_id
+LEFT JOIN product p ON op.product_id = p.product_id
   `;
   db.query(query, (err, results) => {
     if (err) {
