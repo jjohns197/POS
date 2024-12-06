@@ -497,6 +497,63 @@ app.delete('/Receipts/order/:order_id', async (req, res) => {
   }
 });
 
+//Reports//
+
+app.post('/Reports', (req, res) => {
+  const { employee_id, report_date, report_type, report_message, comments } = req.body;
+
+  const query = `
+      INSERT INTO Reports (employee_id, report_date, report_type, report_message, comments)
+      VALUES (?, ?, ?, ?, ?)
+  `;
+  db.query(
+      query,
+      [employee_id, report_date, report_type, report_message, comments],
+      (err, result) => {
+          if (err) {
+              console.error('Error adding report:', err);
+              res.status(500).json({ error: 'Failed to add report' });
+          } else {
+              res.status(201).json({ message: 'Report added successfully', reportId: result.insertId });
+          }
+      }
+  );
+});
+
+app.get('/Reports', (req, res) => {
+  const query = `
+      SELECT r.report_id, r.report_date, r.report_type, r.report_message, r.comments,
+             e.employee_fName, e.employee_lName
+      FROM Reports r
+      JOIN Employee e ON r.employee_id = e.employee_id
+  `;
+  db.query(query, (err, results) => {
+      if (err) {
+          console.error('Error fetching reports:', err);
+          res.status(500).json({ error: 'Failed to fetch reports' });
+      } else {
+          res.status(200).json(results);
+      }
+  });
+});
+
+app.delete('/Reports/:report_id', (req, res) => {
+  const { report_id } = req.params;
+
+  const query = 'DELETE FROM Reports WHERE report_id = ?';
+  db.query(query, [report_id], (err, result) => {
+      if (err) {
+          console.error('Error deleting report:', err);
+          res.status(500).json({ error: 'Failed to delete report' });
+      } else if (result.affectedRows === 0) {
+          res.status(404).json({ message: 'Report not found' });
+      } else {
+          res.status(200).json({ message: 'Report deleted successfully' });
+      }
+  });
+});
+
+
 app.listen(5001, () => {
   console.log('Server running on port 5001');
 });

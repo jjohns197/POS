@@ -8,6 +8,7 @@ import Sales from './pages/Sales';
 import Department from './pages/Department';
 import Employees from './pages/Employees';
 import Receipts from './pages/Receipts';
+import Reports from './pages/Reports';
 
 function Layout() {
   return (
@@ -38,7 +39,7 @@ function App() {
         <Route path="/sales" element={<Sales />} />
         <Route path="/product" element={<Products />} />
         <Route path="/customers" element={<Customers />} />
-        <Route path="/reports" element={<h2>Reports Page</h2>} />
+        <Route path="/reports" element={<Reports Page/>} />
         <Route path="/shipment" element={<h2>Shipment Page</h2>} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/receipts" element={<Receipts />} />
