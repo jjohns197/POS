@@ -474,6 +474,29 @@ app.post('/submit-order', (req, res) => {
   });
 });
 
+app.delete('/Receipts/order/:order_id', async (req, res) => {
+  const orderId = req.params.order_id;
+
+  try {
+      // First, delete the receipt associated with the order_id
+      const deleteReceiptQuery = 'DELETE FROM Receipts WHERE order_id = ?';
+      const [receiptResult] = await db.execute(deleteReceiptQuery, [orderId]);
+
+      // Then, delete the order
+      const deleteOrderQuery = 'DELETE FROM orders WHERE order_id = ?';
+      const [orderResult] = await db.execute(deleteOrderQuery, [orderId]);
+
+      if (receiptResult.affectedRows > 0 || orderResult.affectedRows > 0) {
+          res.status(200).send({ message: 'Order and associated receipt deleted successfully' });
+      } else {
+          res.status(404).send({ message: 'Order not found' });
+      }
+  } catch (error) {
+      console.error('Error deleting order and receipt:', error);
+      res.status(500).send({ message: 'Failed to delete order and receipt' });
+  }
+});
+
 app.listen(5001, () => {
   console.log('Server running on port 5001');
 });
