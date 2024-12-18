@@ -95,9 +95,9 @@ function Products() {
 
       {/* Action Buttons */}
       <div className="button-container">
-        <button onClick={() => setNewProduct({ product_name: '', price: 0, product_quantity: 0, product_descr: '' })}>Add Product</button>
-        <button onClick={() => setEditProduct(selectedProduct)}>Update Product</button>
-        <button onClick={deleteProduct}>Delete Product</button>
+        <button className="add-button" onClick={() => setNewProduct({ product_name: '', price: 0, product_quantity: 0, product_descr: '' })}>Add Product</button>
+        <button className="update-button" onClick={() => setEditProduct(selectedProduct)}>Update Product</button>
+        <button className="delete-button" onClick={deleteProduct}>Delete Product</button>
       </div>
 
       {/* Modals for Adding/Updating */}
@@ -108,8 +108,8 @@ function Products() {
           <input type="number" placeholder="Price" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} />
           <input type="number" placeholder="Quantity" value={newProduct.product_quantity} onChange={(e) => setNewProduct({ ...newProduct, product_quantity: parseInt(e.target.value) })} />
           <input type="text" placeholder="Description" value={newProduct.product_descr} onChange={(e) => setNewProduct({ ...newProduct, product_descr: e.target.value })} />
-          <button onClick={addProduct}>Submit</button>
-          <button onClick={() => setNewProduct(null)}>Close</button>
+          <button className="add-button" onClick={addProduct}>Submit</button>
+          <button className="delete-button" onClick={() => setNewProduct(null)}>Close</button>
         </div>
       )}
 
@@ -120,8 +120,8 @@ function Products() {
           <input type="number" placeholder="Price" value={editProduct.price} onChange={(e) => setEditProduct({ ...editProduct, price: parseFloat(e.target.value) })} />
           <input type="number" placeholder="Quantity" value={editProduct.product_quantity} onChange={(e) => setEditProduct({ ...editProduct, product_quantity: parseInt(e.target.value) })} />
           <input type="text" placeholder="Description" value={editProduct.product_descr} onChange={(e) => setEditProduct({ ...editProduct, product_descr: e.target.value })} />
-          <button onClick={updateProduct}>Update</button>
-          <button onClick={() => setEditProduct(null)}>Close</button>
+          <button className="update-button" onClick={updateProduct}>Update</button>
+          <button className="delete-button" onClick={() => setEditProduct(null)}>Close</button>
         </div>
       )}
     </div>

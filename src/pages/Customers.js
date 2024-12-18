@@ -97,9 +97,9 @@ function Customers() {
 
       {/* Action Buttons */}
       <div className="button-container">
-        <button onClick={() => setNewCustomer({ customer_fName: '', customer_lName: '', customer_email: '', customer_phone: '' })}>Add Customer</button>
-        <button onClick={() => setEditCustomer(selectedCustomer)}>Update Customer</button>
-        <button onClick={deleteCustomer}>Delete Customer</button>
+        <button className = "add-button" onClick={() => setNewCustomer({ customer_fName: '', customer_lName: '', customer_email: '', customer_phone: '' })}>Add Customer</button>
+        <button className = "update-button" onClick={() => setEditCustomer(selectedCustomer)}>Update Customer</button>
+        <button className = "delete-button" onClick={deleteCustomer}>Delete Customer</button>
       </div>
 
       {/* Modals for Adding/Updating */}
@@ -110,8 +110,8 @@ function Customers() {
           <input type="text" placeholder="Last Name" value={newCustomer.customer_lName} onChange={(e) => setNewCustomer({ ...newCustomer, customer_lName: e.target.value })} />
           <input type="email" placeholder="Email" value={newCustomer.customer_email} onChange={(e) => setNewCustomer({ ...newCustomer, customer_email: e.target.value })} />
           <input type="text" placeholder="Phone" value={newCustomer.customer_phone} onChange={(e) => setNewCustomer({ ...newCustomer, customer_phone: e.target.value })} />
-          <button onClick={addCustomer}>Submit</button>
-          <button onClick={() => setNewCustomer(null)}>Close</button>
+          <button className="add-button" onClick={addCustomer}>Submit</button>
+          <button className="delete-button" onClick={() => setNewCustomer(null)}>Close</button>
         </div>
       )}
 
@@ -122,8 +122,8 @@ function Customers() {
           <input type="text" placeholder="Last Name" value={editCustomer.customer_lName} onChange={(e) => setEditCustomer({ ...editCustomer, customer_lName: e.target.value })} />
           <input type="email" placeholder="Email" value={editCustomer.customer_email} onChange={(e) => setEditCustomer({ ...editCustomer, customer_email: e.target.value })} />
           <input type="text" placeholder="Phone" value={editCustomer.customer_phone} onChange={(e) => setEditCustomer({ ...editCustomer, customer_phone: e.target.value })} />
-          <button onClick={updateCustomer}>Update</button>
-          <button onClick={() => setEditCustomer(null)}>Close</button>
+          <button className="update-button" onClick={updateCustomer}>Update</button>
+          <button className= "delete-button" onClick={() => setEditCustomer(null)}>Close</button>
         </div>
       )}
     </div>

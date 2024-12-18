@@ -204,9 +204,9 @@ function Orders() {
 
       {/* Action Buttons */}
       <div className="button-container">
-        <button onClick={handleAddClick}>Add</button>
+        <button className="add-button" onClick={handleAddClick}>Add</button>
 
-        <button onClick={handleDeleteOrder}>Delete</button>
+        <button className="delete-button" onClick={handleDeleteOrder}>Delete</button>
       </div>
 
 
@@ -274,11 +274,11 @@ function Orders() {
               ))}
             </tbody>
           </table>
-          <button onClick={handleAddProduct}>Add Product</button>
+          <button className="add-button" onClick={handleAddProduct}>Add Product</button>
         </div>
       )}
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <button
+        <button className="add-button" 
           onClick={() => {
             if (!selectedCustomer || !selectedProducts) {
               alert('Please select a customer and at least one product before submitting.');
@@ -301,7 +301,7 @@ function Orders() {
             setPreviewProducts([]);
           }}
         >
-          Submit Order
+          Confirm Order
         </button>
 
       </div>

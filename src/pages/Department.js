@@ -112,7 +112,7 @@ function Department() {
             <button onClick={() => setEditDepartment(null)}>Cancel</button>
           </>
         ) : (
-          <button onClick={addDepartment}>Add</button>
+          <button className="add-button" onClick={addDepartment}>Add</button>
         )}
       </div>
 

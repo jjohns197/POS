@@ -174,7 +174,7 @@ function Reports() {
                         setNewReport({ ...newReport, comments: e.target.value })
                     }
                 />
-                <button onClick={addReport}>Add Report</button>
+                <button className="add-button" onClick={addReport}>Add Report</button>
             </div>
         </div>
     );

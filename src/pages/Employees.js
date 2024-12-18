@@ -102,7 +102,7 @@ function Employee() {
             </div>
 
             <div className="delete-employee">
-                <button onClick={deleteEmployee}>Delete Selected Employee</button>
+                <button className="delete-button" onClick={deleteEmployee}>Delete Selected Employee</button>
             </div>
 
             <div className="add-employee">
@@ -139,7 +139,7 @@ function Employee() {
                     onChange={(e) => setNewEmployee({ ...newEmployee, employee_dob: e.target.value })}
                 />
 
-                <button onClick={addEmployee}>Add Employee</button>
+                <button className="add-button" onClick={addEmployee}>Add Employee</button>
             </div>
         </div>
     );

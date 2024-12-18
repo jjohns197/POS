@@ -40,3 +40,47 @@
 .bottom {
   grid-row: 3; /* Third row for the bottom boxes */
 }
+
+.delete-button {
+  background-color: #ff4d4d; /* Red color */
+  color: white;              /* White text */
+  font-size: 18px;           /* Larger text */
+  padding: 10px 20px;        /* Bigger button */
+  border: none;              /* No border */
+  border-radius: 5px;        /* Rounded corners */
+  cursor: pointer;           /* Pointer cursor */
+}
+
+.delete-button:hover {
+  background-color: #e63939; /* Slightly darker red on hover */
+}
+
+.add-button {
+  background-color: #0f0aa5; /* blue color */
+  color: white;              /* White text */
+  font-size: 18px;           /* Larger text */
+  padding: 10px 20px;        /* Bigger button */
+  border: none;              /* No border */
+  border-radius: 5px;        /* Rounded corners */
+  cursor: pointer;           /* Pointer cursor */
+}
+
+.add-button:hover {
+  background-color: #2b41bb; /* Slightly darker blue on hover */
+}
+
+.update-button {
+  background-color: #976509; /* orange color */
+  color: white;              /* White text */
+  font-size: 18px;           /* Larger text */
+  padding: 10px 20px;        /* Bigger button */
+  border: none;              /* No border */
+  border-radius: 5px;        /* Rounded corners */
+  cursor: pointer;           /* Pointer cursor */
+}
+
+.update-button:hover {
+  background-color: #d5cb10; /* Slightly darker blue on hover */
+}
+
+

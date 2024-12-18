@@ -162,7 +162,7 @@ const Sales = () => {
 
             {/* Total Amount and Submit Button */}
             <h2>Total Amount: ${totalAmount.toFixed(2)}</h2>
-            <button onClick={() => {
+            <button className="add-button" onClick={() => {
                 calculateTotalAmount();
                 handleSubmitOrder();
             }}>Submit Order</button>
